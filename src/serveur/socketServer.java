@@ -6,8 +6,6 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 
 public class socketServer {
 	
@@ -33,16 +31,6 @@ public class socketServer {
             System.out.println("Could not create server socket on port 1010. Quitting."); 
             System.exit(-1); 
         } 
- 
- 
- 
- 
-        Calendar now = Calendar.getInstance();
-        SimpleDateFormat formatter = new SimpleDateFormat("E yyyy.MM.dd 'at' hh:mm:ss a zzz");
-        System.out.println("It is now : " + formatter.format(now.getTime()));
- 
- 
- 
  
         // Successfully created Server Socket. Now wait for connections. 
         while(ServerOn) 
@@ -120,9 +108,6 @@ public class socketServer {
             BufferedReader in = null; 
             PrintWriter out = null; 
  
-            // Print out details of this connection 
-            System.out.println("Accepted Client Address - " + myClientSocket.getInetAddress().getHostName()); 
- 
             try
             {                                
                 in = new BufferedReader(new InputStreamReader(myClientSocket.getInputStream())); 
@@ -131,37 +116,19 @@ public class socketServer {
                 // At this point, we can read for input and reply with appropriate output. 
  
                 // Run in a loop until m_bRunThread is set to false 
+            
                 while(m_bRunThread) 
                 {     
-                	System.out.println("apres while");
+                	//System.out.println("apres while");
                     // read incoming stream 
                     String clientCommand = in.readLine(); 
-                    System.out.println("Client Says :" + clientCommand);
- 
-                    if(!ServerOn) 
-                    { 
-                        // Special command. Quit this thread 
-                        System.out.print("Server has already stopped"); 
-                        out.println("Server has already stopped"); 
-                        out.flush(); 
-                        m_bRunThread = false;   
- 
-                    } 
- 
-                    if(clientCommand.equalsIgnoreCase("quit")) { 
-                        // Special command. Quit this thread 
-                        m_bRunThread = false;   
-                        System.out.print("Stopping client thread for client : "); 
-                    } else if(clientCommand.equalsIgnoreCase("end")) { 
-                        // Special command. Quit this thread and Stop the Server
-                        m_bRunThread = false;   
-                        System.out.print("Stopping client thread for client : "); 
-                        ServerOn = false;
-                    } else {
-                            // Process it 
-                            out.println("Server Says : " + clientCommand); 
-                            out.flush(); 
-                    }
+                    System.out.println("Client Info : " + myClientSocket.getInetAddress().getHostName() + ":" + myClientSocket.getPort() + " Message : " + clientCommand);
+                    
+                    //envoyé au serveur
+                    clientCommand = clientCommand.toUpperCase();
+                    out.println(clientCommand); 
+                    out.flush(); 
+                    
                 } 
             } 
             catch(Exception e) 
