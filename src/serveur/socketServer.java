@@ -23,7 +23,8 @@ public class socketServer {
     public socketServer() 
     { 
         try
-        { 
+        {
+            // On crée le socket
             myServerSocket = new ServerSocket(1010); 
         } 
         catch(IOException ioe) 
@@ -32,25 +33,15 @@ public class socketServer {
             System.exit(-1); 
         } 
  
-        // Successfully created Server Socket. Now wait for connections. 
+
         while(ServerOn) 
         {                        
             try
             { 
-                // Accept incoming connections. 
+                // On accepte les connexion entrante
                 Socket clientSocket = myServerSocket.accept(); 
- 
-                // accept() will block until a client connects to the server. 
-                // If execution reaches this point, then it means that a client 
-                // socket has been accepted. 
- 
-                // For each client, we will start a service thread to 
-                // service the client requests. This is to demonstrate a 
-                // Multi-Threaded server. Starting a thread also lets our 
-                // MultiThreadedSocketServer accept multiple connections simultaneously. 
- 
-                // Start a Service thread 
- 
+
+                //On cree un "thread" pour gerer la connexion avec le client.
                 ClientServiceThread cliThread = new ClientServiceThread(clientSocket);
                 cliThread.start(); 
  
@@ -101,31 +92,28 @@ public class socketServer {
         } 
  
         public void run() 
-        {            
-            // Obtain the input stream and the output stream for the socket 
-            // A good practice is to encapsulate them with a BufferedReader 
-            // and a PrintWriter as shown below. 
+        {
             BufferedReader in = null; 
             PrintWriter out = null; 
  
             try
-            {                                
+            {
+                // On cree les buffers de lecture et d'ecriture
                 in = new BufferedReader(new InputStreamReader(myClientSocket.getInputStream())); 
                 out = new PrintWriter(new OutputStreamWriter(myClientSocket.getOutputStream())); 
  
-                // At this point, we can read for input and reply with appropriate output. 
- 
-                // Run in a loop until m_bRunThread is set to false 
-            
+
+                // Tant que le thread roule, on repond au client
                 while(m_bRunThread) 
                 {     
-                	//System.out.println("apres while");
-                    // read incoming stream 
-                    String clientCommand = in.readLine(); 
+                	//lecture de l'envoi du client
+                    String clientCommand = in.readLine();
+                    // Affichage  de l'adresse du client, de son port et du message envoyé
                     System.out.println("Client Info : " + myClientSocket.getInetAddress().getHostName() + ":" + myClientSocket.getPort() + " Message : " + clientCommand);
                     
-                    //envoyé au serveur
+                    //on met le message en majuscule
                     clientCommand = clientCommand.toUpperCase();
+                    // On renvoit le texte en majuscule
                     out.println(clientCommand); 
                     out.flush(); 
                     
@@ -139,7 +127,8 @@ public class socketServer {
             { 
                 // Clean up 
                 try
-                {                    
+                {
+                    // À la fermeture on ferme le socket et les buffers
                     in.close(); 
                     out.close(); 
                     myClientSocket.close(); 

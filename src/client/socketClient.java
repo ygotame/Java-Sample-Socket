@@ -21,43 +21,37 @@ public class socketClient {
 		String texte;
 		String envoi="bob\r\n";
 		Socket socket; // Le socket de connexion
-		//DataOutputStream  ecriture; // Le buffer d'écriture
-		//DataInputStream  lecture; // Le buffer de lecture
 		InputStreamReader ecriture; // Le buffer d'écriture
-	    BufferedReader lecture;
-		
-		//boolean adresseValide = false;
+	    BufferedReader lecture; // Le buffer de lecture
+
 		
 		Scanner entres = new Scanner(System.in);
-		
-		//System.out.print("Entrez l'adresse");
-		//adresseServeur = entres.nextLine();
-		//System.out.println();
-		//System.out.print("You entered string "+adresseServeur);
+
+		// Adresse et port du serveur a connecter
 		adresseServeur = "localhost";
 		portServeur = 1010;
-		//System.out.println("Entrez le port");
-	    //  portServeur = entres.nextInt();
-	    //  System.out.println("You entered integer "+portServeur);
 		
 		
 		// Si l'usagé n'a pas annulé, connecte au serveur
 		if (adresseServeur != null) {
 			try {
-				
+				//creation du socket et des "buffer" de lecture et d'ecriture
 				socket = new Socket(adresseServeur, portServeur);
 				ecriture = new InputStreamReader(socket.getInputStream());
 				lecture = new BufferedReader(ecriture);
 				
 			    PrintWriter printwriter = new PrintWriter(socket.getOutputStream(),true);
-			    
+
+				//affichage du port local
 			    System.out.println("Port local : " + socket.getLocalPort());
 				
 				 while (socket != null && ecriture != null && lecture != null)
 				 {
+					 //le message a envoyer au serveur
 					 System.out.print("Votre message : ");
 					 envoi = entres.nextLine();
 					 printwriter.println(envoi);
+					 //on recoit et affiche la reponse du serveur
 					 texte = lecture.readLine();
 					 System.out.println(texte);
 				 }
