@@ -6,40 +6,50 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Scanner;
 
 public class socketServer {
 	
 
-//}
-
- 
- 
-//public class MultiThreadedSocketServer {
- 
-    ServerSocket myServerSocket;
-    boolean ServerOn = true;
- 
- 
-    public socketServer() 
+    ServerSocket unServeurSocket;
+    boolean serveurOn = true;
+     
+    public static void main (String[] args) 
+    { 
+    	int portServeur;
+    	Scanner entres = new Scanner(System.in);
+		
+		System.out.print("Entrez le port : ");
+		portServeur = entres.nextInt();
+    	
+    	new socketServer(portServeur);
+    	
+    	entres.close();
+    	
+    	
+    }
+    
+    public socketServer(int portServeur) 
     { 
         try
         {
             // On crée le socket
-            myServerSocket = new ServerSocket(1010); 
+            unServeurSocket = new ServerSocket(portServeur); 
+            System.out.println("Serveur en mode écoute sur le port : " + portServeur);
         } 
         catch(IOException ioe) 
         { 
-            System.out.println("Could not create server socket on port 1010. Quitting."); 
+            System.out.println("Incapable de rouler le serveur sur le port " + portServeur + ". \n Veuillez essayer un autre port. \n Merci."); 
             System.exit(-1); 
         } 
  
 
-        while(ServerOn) 
+        while(serveurOn) 
         {                        
             try
             { 
-                // On accepte les connexion entrante
-                Socket clientSocket = myServerSocket.accept(); 
+                // On accepte les connexion entrantes
+                Socket clientSocket = unServeurSocket.accept(); 
 
                 //On cree un "thread" pour gerer la connexion avec le client.
                 ClientServiceThread cliThread = new ClientServiceThread(clientSocket);
@@ -48,7 +58,7 @@ public class socketServer {
             } 
             catch(IOException ioe) 
             { 
-                System.out.println("Exception encountered on accept. Ignoring. Stack Trace :"); 
+                System.out.println("Exception rencontrée en acceptant le socket client. Stack Trace :"); 
                 ioe.printStackTrace(); 
             } 
  
@@ -56,38 +66,31 @@ public class socketServer {
  
         try
         { 
-            myServerSocket.close(); 
-            System.out.println("Server Stopped"); 
+            unServeurSocket.close(); 
+            System.out.println("Arrêt du serveu socketr"); 
         } 
         catch(Exception ioe) 
         { 
-            System.out.println("Problem stopping server socket"); 
+            System.out.println("Incapable d'arrêtrer le serveur"); 
             System.exit(-1); 
         } 
  
- 
- 
-    } 
- 
-    public static void main (String[] args) 
-    { 
-        new socketServer();        
     } 
  
  
     class ClientServiceThread extends Thread 
     { 
-        Socket myClientSocket;
-        boolean m_bRunThread = true; 
+        Socket unSocketClient;
+        boolean threadClientActif = true; 
  
         public ClientServiceThread() 
         { 
             super(); 
         } 
  
-        ClientServiceThread(Socket s) 
+        ClientServiceThread(Socket socket) 
         { 
-            myClientSocket = s; 
+            unSocketClient = socket; 
  
         } 
  
@@ -99,24 +102,23 @@ public class socketServer {
             try
             {
                 // On cree les buffers de lecture et d'ecriture
-                in = new BufferedReader(new InputStreamReader(myClientSocket.getInputStream())); 
-                out = new PrintWriter(new OutputStreamWriter(myClientSocket.getOutputStream())); 
+                in = new BufferedReader(new InputStreamReader(unSocketClient.getInputStream())); 
+                out = new PrintWriter(new OutputStreamWriter(unSocketClient.getOutputStream())); 
  
 
                 // Tant que le thread roule, on repond au client
-                while(m_bRunThread) 
+                while(threadClientActif) 
                 {     
                 	//lecture de l'envoi du client
                     String clientCommand = in.readLine();
-                    // Affichage  de l'adresse du client, de son port et du message envoyé
-                    System.out.println("Client Info : " + myClientSocket.getInetAddress().getHostName() + ":" + myClientSocket.getPort() + " Message : " + clientCommand);
+                    // Affichage  du message recu, de l'adresse et le port du client 
+                    System.out.println(clientCommand + " " + unSocketClient.getInetAddress().getHostAddress() + ":" + unSocketClient.getPort());
                     
                     //on met le message en majuscule
                     clientCommand = clientCommand.toUpperCase();
                     // On renvoit le texte en majuscule
                     out.println(clientCommand); 
-                    out.flush(); 
-                    
+                    out.flush();  
                 } 
             } 
             catch(Exception e) 
@@ -125,14 +127,13 @@ public class socketServer {
             } 
             finally
             { 
-                // Clean up 
                 try
                 {
                     // À la fermeture on ferme le socket et les buffers
                     in.close(); 
                     out.close(); 
-                    myClientSocket.close(); 
-                    System.out.println("...Stopped"); 
+                    unSocketClient.close(); 
+                    System.out.println("Arrêt socket"); 
                 } 
                 catch(IOException ioe) 
                 { 
@@ -141,6 +142,5 @@ public class socketServer {
             } 
         } 
  
- 
-    } 
+    }
 }

@@ -1,16 +1,11 @@
 package client;
 
 import java.io.BufferedReader;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.ConnectException;
-import java.net.InetAddress;
 import java.net.Socket;
-import java.net.UnknownHostException;
 import java.util.Scanner;
 
 public class socketClient {
@@ -18,21 +13,21 @@ public class socketClient {
 	public static void main(String[] args) throws IOException {
 		String adresseServeur;
 		int portServeur;
-		String texte;
-		String envoi="bob\r\n";
+		String reponse; // Réponse du serveur
+		String envoi; // Message à envoyé au serveur
 		Socket socket; // Le socket de connexion
 		InputStreamReader ecriture; // Le buffer d'écriture
 	    BufferedReader lecture; // Le buffer de lecture
 
-		
 		Scanner entres = new Scanner(System.in);
-
-		// Adresse et port du serveur a connecter
-		adresseServeur = "localhost";
-		portServeur = 1010;
 		
+		System.out.print("Entrez l'adresse : ");
+		adresseServeur = entres.nextLine();
+		System.out.print("Entrez le port : ");
+		portServeur = entres.nextInt();
+					
 		
-		// Si l'usagé n'a pas annulé, connecte au serveur
+		// Si l'adresse est bien valide et non-null, on connecte au serveur
 		if (adresseServeur != null) {
 			try {
 				//creation du socket et des "buffer" de lecture et d'ecriture
@@ -49,11 +44,12 @@ public class socketClient {
 				 {
 					 //le message a envoyer au serveur
 					 System.out.print("Votre message : ");
-					 envoi = entres.nextLine();
+					 envoi = entres.next();
 					 printwriter.println(envoi);
 					 //on recoit et affiche la reponse du serveur
-					 texte = lecture.readLine();
-					 System.out.println(texte);
+					 reponse = lecture.readLine();
+					 System.out.println("Réponse serveur : " + reponse);
+					 
 				 }
 				 printwriter.println("quit");
 				 printwriter.close();
@@ -64,15 +60,8 @@ public class socketClient {
 				
 			} catch (ConnectException ex) {
 				
-				System.out.println("Erreur 1");
-				//System.out.println(socket.getInetAddress() + " port : " + socket.getPort() );
-				
-				
-				
-			} catch (UnknownHostException ex) {
-				
-				System.out.println("Erreur");
-				//System.out.println(socket.getInetAddress() + " port : " + socket.getPort() );
+				System.out.println("Erreur de création de socket");
+				System.exit(-1);	
 				
 			}
 			
