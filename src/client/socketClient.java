@@ -11,6 +11,7 @@ import java.util.Scanner;
 public class socketClient {
 
 	public static void main(String[] args) throws IOException {
+		String QUITTER = "QUIT";
 		String adresseServeur;
 		int portServeur;
 		String reponse; // Réponse du serveur
@@ -49,12 +50,14 @@ public class socketClient {
 					 //on recoit et affiche la reponse du serveur
 					 reponse = lecture.readLine();
 					 System.out.println("Réponse serveur : " + reponse);
+					 if (reponse.equals(QUITTER))
+					 {
+						 ecriture.close();
+					     lecture.close();
+					 }
 					 
 				 }
-				 printwriter.println("quit");
 				 printwriter.close();
-				 ecriture.close();
-			     lecture.close();
 			     socket.close();
 				 entres.close();
 				

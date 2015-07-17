@@ -12,6 +12,7 @@ public class socketServer {
 	
 
     ServerSocket unServeurSocket;
+    String QUITTER = "QUIT";
     boolean serveurOn = true;
      
     public static void main (String[] args) 
@@ -107,7 +108,7 @@ public class socketServer {
  
 
                 // Tant que le thread roule, on repond au client
-                while(threadClientActif) 
+                do
                 {     
                 	//lecture de l'envoi du client
                     String clientCommand = in.readLine();
@@ -118,8 +119,13 @@ public class socketServer {
                     clientCommand = clientCommand.toUpperCase();
                     // On renvoit le texte en majuscule
                     out.println(clientCommand); 
-                    out.flush();  
-                } 
+                    out.flush();
+                    if (clientCommand == QUITTER)
+					 {
+						threadClientActif = false;
+					 }
+                    
+                } while (threadClientActif);
             } 
             catch(Exception e) 
             { 
